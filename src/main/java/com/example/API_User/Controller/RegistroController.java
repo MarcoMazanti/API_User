@@ -4,7 +4,6 @@ import com.example.API_User.Entity.Permissao;
 import com.example.API_User.Entity.Registro;
 import com.example.API_User.Entity.Status;
 import com.example.API_User.Repository.RegistroRepository;
-import com.example.API_User.Security.Criptografar;
 import com.example.API_User.Service.DadosRegistro;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +21,8 @@ import static com.example.API_User.Security.EncriptacaoSenha.validarSenha;
 public class RegistroController {
     @Autowired
     private RegistroRepository registroRepository;
-    private Criptografar criptografar;
     private final DadosRegistro dadosRegistro = new DadosRegistro(registroRepository);
+
     @GetMapping("/login/{cpf}/{senha}")
     public ResponseEntity<?> getLogin(@PathVariable String cpf, @PathVariable String senha) {
         try {

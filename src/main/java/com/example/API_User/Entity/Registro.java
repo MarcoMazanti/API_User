@@ -1,5 +1,6 @@
 package com.example.API_User.Entity;
 
+import com.example.API_User.Security.Descript.Descriptografar;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Entity(name = "register")
@@ -77,6 +79,19 @@ public class Registro {
         this.telefone = formatarTelefone(telefone);
         this.status = status;
         this.permissao = permissao;
+    }
+
+    public Registro(RegistroCriptografado registroCriptografado, SecretKey secretKey) {
+        Descriptografar descriptografar = new Descriptografar();
+
+        this.id = Integer.valueOf(descriptografar.descriptografarCampo(registroCriptografado.getId(), secretKey));
+        this.nome = descriptografar.descriptografarCampo(registroCriptografado.getNome(), secretKey);
+        this.cpf = descriptografar.descriptografarCampo(registroCriptografado.getCpf(), secretKey);
+        this.email = descriptografar.descriptografarCampo(registroCriptografado.getEmail(), secretKey);
+        this.password = descriptografar.descriptografarCampo(registroCriptografado.getPassword(), secretKey);
+        this.telefone = Long.valueOf(descriptografar.descriptografarCampo(registroCriptografado.getTelefone(), secretKey));
+        this.status = Status.valueOf(descriptografar.descriptografarCampo(registroCriptografado.getStatus(), secretKey));
+        this.permissao = Permissao.valueOf(descriptografar.descriptografarCampo(registroCriptografado.getPermissao(), secretKey));
     }
 
     private String formatarCPF(String cpf) {

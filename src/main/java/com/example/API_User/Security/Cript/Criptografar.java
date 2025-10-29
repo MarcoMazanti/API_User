@@ -1,4 +1,4 @@
-package com.example.API_User.Security;
+package com.example.API_User.Security.Cript;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -65,12 +65,12 @@ public class Criptografar {
         }
     }
 
-    public String criptografarBody(String payload, SecretKey secretKey) {
+    public String criptografarCampo(byte[] campo, SecretKey secretKey) {
         try {
             Cipher aesCipher = Cipher.getInstance("AES");
             aesCipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
-            byte[] encryptedBytes = aesCipher.doFinal(payload.getBytes());
+            byte[] encryptedBytes = aesCipher.doFinal(campo);
             return Base64.getEncoder().encodeToString(encryptedBytes);
         } catch (Exception e) {
             System.out.println("Erro ao criptografar payload: " + e.getMessage());

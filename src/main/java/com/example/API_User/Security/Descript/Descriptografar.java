@@ -1,8 +1,8 @@
-package com.example.API_User.Security;
+package com.example.API_User.Security.Descript;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -10,10 +10,10 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Arrays;
 import java.util.Base64;
 
-public class DescriptografarAPI_User {
+@Component
+public class Descriptografar {
     @Value("${chave.privada}")
     private String chavePrivadaString;
 
@@ -33,31 +33,30 @@ public class DescriptografarAPI_User {
 
             // Geração final das chaves
             this.privateKey = keyFactory.generatePrivate(privateKeySpec);
-            System.out.println("chave privada: " + Arrays.toString(privateKey.getEncoded()));
         } catch (Exception e) {
             System.out.println("Erro ao inicializar as chaves");
         }
     }
 
 
-    public String descriptografarSecretKey(SecretKey secretKey) {
+    public SecretKey descriptografarSecretKey(String secretKey) {
         try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            byte[] decodificado = Base64.getDecoder().decode(secretKey.getEncoded());
+            byte[] decodificado = Base64.getDecoder().decode(secretKey);
             byte[] descriptografado = cipher.doFinal(decodificado);
-            String result = new String(descriptografado);
+            String keyFinal = new String(descriptografado);
 
-            return result;
+            return new SecretKeySpec(keyFinal.getBytes(), "AES");
         } catch (Exception e) {
             System.out.println("Erro ao descriptografar secretKey: " + e.getMessage());
             return null;
         }
     }
 
-    public String descriptografarBody(String payload, SecretKey secretKey) {
+    public String descriptografarCampo(String campoCriptografado, SecretKey secretKey) {
         try {
-            byte[] encryptedBodyBytes = Base64.getDecoder().decode(payload);
+            byte[] encryptedBodyBytes = Base64.getDecoder().decode(campoCriptografado);
 
             Cipher aesCipher = Cipher.getInstance("AES");
             aesCipher.init(Cipher.DECRYPT_MODE, secretKey);
@@ -66,33 +65,6 @@ public class DescriptografarAPI_User {
             return Base64.getEncoder().encodeToString(decrypteBodyBytes);
         } catch (Exception e) {
             System.out.println("Erro ao descriptografar payload: " + e.getMessage());
-            return null;
-        }
-    }
-
-    public String descriptografarResponse(ResponseEntity<?> response) {
-        String chaveHeaderBase64 = response.getHeaders().getFirst("secret_key");
-
-        if (chaveHeaderBase64 == null) return null;
-        if (response.getBody() == null) return null;
-
-        byte[] chaveHeader = Base64.getEncoder().encode(chaveHeaderBase64.getBytes());
-
-        try {
-            Cipher cipherHeader = Cipher.getInstance("RSA");
-            cipherHeader.init(Cipher.DECRYPT_MODE, privateKey);
-
-            chaveHeader = cipherHeader.doFinal(chaveHeader);
-            SecretKey secretKey = new SecretKeySpec(chaveHeader, "AES");
-
-            Cipher cipherBody = Cipher.getInstance("AES");
-            cipherBody.init(Cipher.DECRYPT_MODE, secretKey);
-
-            byte[] body =  cipherBody.doFinal(response.getBody().toString().getBytes());
-
-            return new String(body);
-        } catch (Exception e) {
-            System.out.println("Erro ao descriptografar Response: " + e.getMessage());
             return null;
         }
     }

@@ -1,5 +1,7 @@
-package com.example.API_User.Security;
+package com.example.API_User.Security.Cript;
 
+import com.example.API_User.Entity.Registro;
+import com.example.API_User.Entity.RegistroCriptografado;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -31,7 +33,10 @@ public class CriptResponseAdivice implements ResponseBodyAdvice<Object> {
                                   ServerHttpRequest request,
                                   ServerHttpResponse response) {
         SecretKey secretKey = criptografar.generateAesKey();
-        String encryptedBody = criptografar.criptografarBody(body.toString(), secretKey);
+        RegistroCriptografado encryptedBody;
+        if(body instanceof Registro r) encryptedBody = new RegistroCriptografado(r, secretKey);
+        else return body;
+
         response.getHeaders().set("secret_key", criptografar.criptografarSecretKey(secretKey));
 
         return encryptedBody;
