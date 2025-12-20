@@ -1,36 +1,60 @@
 package com.example.API_User.Entity;
 
-import com.example.API_User.Security.Cript.Criptografar;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-
-import javax.crypto.SecretKey;
-import java.nio.ByteBuffer;
 
 @Getter
 public class RegistroCriptografado {
-    private final String id;
-    private final String nome;
-    private final String cpf;
-    private final String email;
-    private final String password;
-    private final String telefone;
-    private final String dataNascimento;
-    private final String dataCadastro;
-    private final String status;
-    private final String permissao;
+        private final String id;
+        private final String nome;
+        private final String cpf;
+        private final String email;
+        private final String password;
+        private final String telefone;
+        private final String dataNascimento;
+        private final String dataCadastro;
+        private final String status;
+        private final String permissao;
 
-    public RegistroCriptografado(Registro registro, SecretKey secretKey) {
-        Criptografar criptografar = new Criptografar("USER");
+    @JsonCreator
+    public RegistroCriptografado(
+                @JsonProperty("id") String id,
+                @JsonProperty("nome") String nome,
+                @JsonProperty("cpf") String cpf,
+                @JsonProperty("email") String email,
+                @JsonProperty("password") String password,
+                @JsonProperty("telefone") String telefone,
+                @JsonProperty("dataNascimento") String dataNascimento,
+                @JsonProperty("dataCadastro") String dataCadastro,
+                @JsonProperty("status") String status,
+                @JsonProperty("permissao") String permissao
+        ) {
+            this.id = id;
+            this.nome = nome;
+            this.cpf = cpf;
+            this.email = email;
+            this.password = password;
+            this.telefone = telefone;
+            this.dataNascimento = dataNascimento;
+            this.dataCadastro = dataCadastro;
+            this.status = status;
+            this.permissao = permissao;
+        }
 
-        this.id = criptografar.criptografarCampo(ByteBuffer.allocate(4).putInt(registro.getId()).array(), secretKey);
-        this.nome = criptografar.criptografarCampo(registro.getNome().getBytes(), secretKey);
-        this.cpf = criptografar.criptografarCampo(registro.getCpf().getBytes(), secretKey);
-        this.email = criptografar.criptografarCampo(registro.getEmail().getBytes(), secretKey);
-        this.password = criptografar.criptografarCampo(registro.getPassword().getBytes(), secretKey);
-        this.telefone = criptografar.criptografarCampo(ByteBuffer.allocate(8).putLong(registro.getTelefone()).array(), secretKey);
-        this.dataNascimento = criptografar.criptografarCampo(ByteBuffer.allocate(8).putLong(registro.getDataNascimento().getTime()).array(), secretKey);
-        this.dataCadastro = criptografar.criptografarCampo(ByteBuffer.allocate(8).putLong(registro.getDataCadastro().getTime()).array(), secretKey);
-        this.status = criptografar.criptografarCampo(ByteBuffer.allocate(4).putInt(registro.getStatus().ordinal()).array(), secretKey);
-        this.permissao = criptografar.criptografarCampo(ByteBuffer.allocate(4).putInt(registro.getPermissao().ordinal()).array(), secretKey);
-    }
+        @Override
+        public String toString() {
+            return "RegistroCriptografado{" +
+                    "id='" + id + '\'' +
+                    ", nome='" + nome + '\'' +
+                    ", cpf='" + cpf + '\'' +
+                    ", email='" + email + '\'' +
+                    ", password='" + password + '\'' +
+                    ", telefone='" + telefone + '\'' +
+                    ", dataNascimento='" + dataNascimento + '\'' +
+                    ", dataCadastro='" + dataCadastro + '\'' +
+                    ", status='" + status + '\'' +
+                    ", permissao='" + permissao + '\'' +
+                    '}';
+        }
 }

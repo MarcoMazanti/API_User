@@ -1,6 +1,5 @@
 package com.example.API_User.Entity;
 
-import com.example.API_User.Security.Descript.Descriptografar;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -8,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Entity(name = "register")
@@ -20,20 +18,16 @@ public class Registro {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Size(max = 255)
     @NotBlank
     private String nome;
 
     @NotBlank
     private String cpf;
 
-    @Email(message = "Email inválido")
     @Size(min = 10, max = 255)
-    @NotBlank
     private String email;
 
     @Size(min = 6, max = 60)
-    @NotBlank
     private String password;
 
     @Digits(integer = 15, fraction = 0)
@@ -81,24 +75,27 @@ public class Registro {
         this.permissao = permissao;
     }
 
-    public Registro(RegistroCriptografado registroCriptografado, SecretKey secretKey) {
-        Descriptografar descriptografar = new Descriptografar();
-
-        this.id = Integer.valueOf(descriptografar.descriptografarCampo(registroCriptografado.getId(), secretKey));
-        this.nome = descriptografar.descriptografarCampo(registroCriptografado.getNome(), secretKey);
-        this.cpf = descriptografar.descriptografarCampo(registroCriptografado.getCpf(), secretKey);
-        this.email = descriptografar.descriptografarCampo(registroCriptografado.getEmail(), secretKey);
-        this.password = descriptografar.descriptografarCampo(registroCriptografado.getPassword(), secretKey);
-        this.telefone = Long.valueOf(descriptografar.descriptografarCampo(registroCriptografado.getTelefone(), secretKey));
-        this.status = Status.valueOf(descriptografar.descriptografarCampo(registroCriptografado.getStatus(), secretKey));
-        this.permissao = Permissao.valueOf(descriptografar.descriptografarCampo(registroCriptografado.getPermissao(), secretKey));
-    }
-
     private String formatarCPF(String cpf) {
         return cpf.replaceAll("\\.", "").replaceAll("-", "");
     }
 
     private Long formatarTelefone(String telefone) {
         return Long.parseLong(telefone.replaceAll(" ", "").replaceAll("-", "").replaceAll("\\.", ""));
+    }
+
+    @Override
+    public String toString() {
+        return "Registro{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", cpf='" + cpf + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", telefone=" + telefone +
+                ", dataNascimento=" + dataNascimento +
+                ", dataCadastro=" + dataCadastro +
+                ", status=" + status +
+                ", permissao=" + permissao +
+                '}';
     }
 }

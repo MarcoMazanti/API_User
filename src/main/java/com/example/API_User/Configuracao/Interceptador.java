@@ -1,4 +1,5 @@
-package com.example.API_User.Controller;
+package com.example.API_User.Configuracao;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;

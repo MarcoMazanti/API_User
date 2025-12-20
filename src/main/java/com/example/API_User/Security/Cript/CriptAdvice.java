@@ -2,6 +2,8 @@ package com.example.API_User.Security.Cript;
 
 import com.example.API_User.Entity.Registro;
 import com.example.API_User.Entity.RegistroCriptografado;
+import com.example.API_User.Entity.RegistroFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -10,18 +12,14 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-import javax.crypto.SecretKey;
-
 @ControllerAdvice
-public class CriptResponseAdivice implements ResponseBodyAdvice<Object> {
-    private final Criptografar criptografar;
-
-    public CriptResponseAdivice(Criptografar criptografar) {
-        this.criptografar = criptografar;
-    }
+public class CriptAdvice implements ResponseBodyAdvice<Object> {
+    @Autowired
+    private RegistroFactory registroFactory;
 
     @Override
-    public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(MethodParameter returnType,
+                            Class<? extends HttpMessageConverter<?>> converterType) {
         return true;
     }
 
@@ -32,13 +30,13 @@ public class CriptResponseAdivice implements ResponseBodyAdvice<Object> {
                                   Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   ServerHttpRequest request,
                                   ServerHttpResponse response) {
-        SecretKey secretKey = criptografar.generateAesKey();
-        RegistroCriptografado encryptedBody;
-        if(body instanceof Registro r) encryptedBody = new RegistroCriptografado(r, secretKey);
-        else return body;
 
-        response.getHeaders().set("secret_key", criptografar.criptografarSecretKey(secretKey));
-
-        return encryptedBody;
+        if (body == null) return null;
+        if (body instanceof Registro bd) {
+            RegistroCriptografado registroCriptografado = registroFactory.criarRegistroCriptografado(bd);
+            System.out.println(registroCriptografado.toString());
+            return registroCriptografado;
+        }
+        return body;
     }
 }
