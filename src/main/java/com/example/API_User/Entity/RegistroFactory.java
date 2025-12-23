@@ -5,7 +5,6 @@ import com.example.API_User.Security.Descript.Descriptografar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -16,7 +15,7 @@ public class RegistroFactory {
     @Autowired
     private Criptografar criptografar;
 
-    public Registro criarRegistroDescriptografado(RegistroCriptografado registroCriptografado) throws ParseException {
+    public Registro criarRegistroDescriptografado(RegistroCriptografado registroCriptografado) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
         Integer id = Integer.valueOf(descriptografar.descriptografarCampo(registroCriptografado.getId()));

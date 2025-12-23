@@ -7,6 +7,7 @@ import com.example.API_User.Repository.RegistroRepository;
 import com.example.API_User.Service.DadosRegistro;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,8 @@ import static com.example.API_User.Security.EncriptacaoSenha.validarSenha;
 public class RegistroController {
     @Autowired
     private RegistroRepository registroRepository;
-    private final DadosRegistro dadosRegistro = new DadosRegistro(registroRepository);
+    @Autowired
+    private DadosRegistro dadosRegistro;
 
     @GetMapping("/login/{cpf}/{senha}")
     public ResponseEntity<?> getLogin(@PathVariable String cpf, @PathVariable String senha) {
@@ -117,11 +119,15 @@ public class RegistroController {
     @PostMapping("/{idRequerinte}")
     public ResponseEntity<?> create(@PathVariable Integer idRequerinte, @RequestBody @Valid Registro registro) {
         try {
+            System.out.println("id requerinte: " + idRequerinte);
             if (dadosRegistro.permissaoCriarConta(idRequerinte)) {
-                return ResponseEntity.status(HttpStatus.CREATED).body(registroRepository.save(registro));
+                Object retorno = registroRepository.save(registro);
+                return ResponseEntity.status(HttpStatus.CREATED).body(retorno);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
             }
+        }catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CPF já cadastrado!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -135,15 +141,17 @@ public class RegistroController {
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
             }
+        }catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("campo já cadastrado!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-    @DeleteMapping("/{idRequerinte}")
+    @DeleteMapping("/{idRequerinte}/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer idRequerinte, @PathVariable Integer id) {
         try {
-            if (dadosRegistro.permissaoDeletarConta(id, idRequerinte)) {
+            if (dadosRegistro.permissaoDeletarConta(idRequerinte)) {
                 registroRepository.deleteById(id);
                 return ResponseEntity.ok("Deletado com sucesso");
             } else {

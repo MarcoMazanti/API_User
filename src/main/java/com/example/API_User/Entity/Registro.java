@@ -1,5 +1,6 @@
 package com.example.API_User.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Registro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,9 +26,11 @@ public class Registro {
     @NotBlank
     private String cpf;
 
+    @NotBlank
     @Size(min = 10, max = 255)
     private String email;
 
+    @NotBlank
     @Size(min = 6, max = 60)
     private String password;
 
@@ -97,5 +101,21 @@ public class Registro {
                 ", status=" + status +
                 ", permissao=" + permissao +
                 '}';
+    }
+
+    public Object getFieldValue(String campo) {
+        switch (campo) {
+            case "id" -> {return this.id;}
+            case "nome" -> {return this.nome;}
+            case "cpf" -> {return this.cpf;}
+            case "email" -> {return this.email;}
+            case "password" -> {return this.password;}
+            case "telefone" -> {return this.telefone;}
+            case "dataNascimento" -> {return this.dataNascimento.getTime();}
+            case "dataCadastro" -> {return this.dataCadastro.getTime();}
+            case "status" -> {return this.status;}
+            case "permissao" -> {return this.permissao;}
+            default -> {return null;}
+        }
     }
 }

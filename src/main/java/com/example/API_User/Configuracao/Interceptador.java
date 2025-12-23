@@ -13,7 +13,7 @@ public class Interceptador implements HandlerInterceptor {
     private String apiToken;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (request.getHeader("api_token") != null && request.getHeader("api_token").equals(apiToken)) return true;
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
