@@ -7,12 +7,12 @@ import com.example.API_User.Repository.RegistroRepository;
 import com.example.API_User.Service.DadosRegistro;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.example.API_User.Security.EncriptacaoSenha.validarSenha;
@@ -119,15 +119,18 @@ public class RegistroController {
     @PostMapping("/{idRequerinte}")
     public ResponseEntity<?> create(@PathVariable Integer idRequerinte, @RequestBody @Valid Registro registro) {
         try {
-            System.out.println("id requerinte: " + idRequerinte);
+            Optional<Registro> registroOptionalCPF = registroRepository.findByCpf(registro.getCpf());
+            Optional<Registro> registroOptionalEMAIL = registroRepository.findByEmail(registro.getEmail());
+
+            if (registroOptionalCPF.isPresent()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CPF já cadastrado!");
+            if (registroOptionalEMAIL.isPresent()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email já cadastrado!");
+
             if (dadosRegistro.permissaoCriarConta(idRequerinte)) {
                 Object retorno = registroRepository.save(registro);
                 return ResponseEntity.status(HttpStatus.CREATED).body(retorno);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
             }
-        }catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CPF já cadastrado!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -136,13 +139,21 @@ public class RegistroController {
     @PutMapping("/{idRequerinte}")
     public ResponseEntity<?> update(@PathVariable Integer idRequerinte, @RequestBody @Valid Registro registro) {
         try {
+            List<Optional<Registro>> registroOptional = registroRepository.findByCpfOrEmail(registro.getCpf(), registro.getEmail());
+
+            if (!registroOptional.isEmpty()) {
+                if (registroOptional.get(0).isPresent()) {
+                    if (!Objects.equals(registroOptional.get(0).get().getId(), registro.getId())) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Campo único já utilizado!");
+                }
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Registro não encontrado!");
+            }
+
             if (dadosRegistro.permissaoAlteracao(registro, idRequerinte)) {
                 return ResponseEntity.status(HttpStatus.ACCEPTED).body(registroRepository.save(registro));
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
             }
-        }catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("campo já cadastrado!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

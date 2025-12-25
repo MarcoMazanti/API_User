@@ -3,7 +3,6 @@ package com.example.API_User.Security.Descript;
 import com.example.API_User.Entity.Registro;
 import com.example.API_User.Entity.RegistroCriptografado;
 import com.example.API_User.Entity.RegistroFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;

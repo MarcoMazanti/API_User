@@ -18,22 +18,22 @@ public class RegistroFactory {
     public Registro criarRegistroDescriptografado(RegistroCriptografado registroCriptografado) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
-        Integer id = Integer.valueOf(descriptografar.descriptografarCampo(registroCriptografado.getId()));
-        String nome = descriptografar.descriptografarCampo(registroCriptografado.getNome());
-        String cpf = descriptografar.descriptografarCampo(registroCriptografado.getCpf());
-        String email = descriptografar.descriptografarCampo(registroCriptografado.getEmail());
-        String password = descriptografar.descriptografarCampo(registroCriptografado.getPassword());
-        Long telefone = Long.valueOf(descriptografar.descriptografarCampo(registroCriptografado.getTelefone()));
+        Integer id = Integer.valueOf(descriptografar.descriptografarCampo(registroCriptografado.id()));
+        String nome = descriptografar.descriptografarCampo(registroCriptografado.nome());
+        String cpf = descriptografar.descriptografarCampo(registroCriptografado.cpf());
+        String email = descriptografar.descriptografarCampo(registroCriptografado.email());
+        String password = descriptografar.descriptografarCampo(registroCriptografado.password());
+        Long telefone = Long.valueOf(descriptografar.descriptografarCampo(registroCriptografado.telefone()));
 
-        String dataNascimentoStr = descriptografar.descriptografarCampo(registroCriptografado.getDataNascimento()).trim();
+        String dataNascimentoStr = descriptografar.descriptografarCampo(registroCriptografado.dataNascimento()).trim();
         Date dataNascimento = new Date(Long.parseLong(dataNascimentoStr));
-        String dataCadastroStr = descriptografar.descriptografarCampo(registroCriptografado.getDataCadastro()).trim();
+        String dataCadastroStr = descriptografar.descriptografarCampo(registroCriptografado.dataCadastro()).trim();
         Date dataCadastro = new Date(Long.parseLong(dataCadastroStr));
 
-        String statusIndexStr = descriptografar.descriptografarCampo(registroCriptografado.getStatus()).trim();
+        String statusIndexStr = descriptografar.descriptografarCampo(registroCriptografado.status()).trim();
         int statusIndex = Integer.parseInt(statusIndexStr);
         Status status = Status.values()[statusIndex];
-        String permissaoIndexStr = descriptografar.descriptografarCampo(registroCriptografado.getPermissao()).trim();
+        String permissaoIndexStr = descriptografar.descriptografarCampo(registroCriptografado.permissao()).trim();
         int permissaoIndex = Integer.parseInt(permissaoIndexStr);
         Permissao permissao = Permissao.values()[permissaoIndex];
 
