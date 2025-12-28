@@ -43,11 +43,22 @@ public class DecriptAdvice extends RequestBodyAdviceAdapter {
             RegistroCriptografado registroCriptografado = StringToRegistroCript(bodyOriginal);
 
             Registro registro = DescriptografarBody(registroCriptografado);
+            ObjectMapper mapper = new ObjectMapper();
 
             return new HttpInputMessage() {
                 @Override
                 public InputStream getBody() {
-                    return new ByteArrayInputStream(registro.toString().getBytes(StandardCharsets.UTF_8));
+                    try {
+                        if (registro != null) {
+                            String jsonFinal = mapper.writeValueAsString(registro);
+                            return new ByteArrayInputStream(jsonFinal.getBytes(StandardCharsets.UTF_8));
+                        }
+
+                        return new ByteArrayInputStream("".getBytes());
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        return new ByteArrayInputStream("".getBytes());
+                    }
                 }
 
                 @Override
