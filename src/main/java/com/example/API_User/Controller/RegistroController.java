@@ -25,6 +25,18 @@ public class RegistroController {
     @Autowired
     private DadosRegistro dadosRegistro;
 
+    @GetMapping()
+    public ResponseEntity<?> getAll() {
+        try {
+            List<Registro> listaRegistro = registroRepository.findAll();
+
+            if (listaRegistro.isEmpty()) return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return ResponseEntity.ok(listaRegistro);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
     @GetMapping("/login/{cpf}/{senha}")
     public ResponseEntity<?> getLogin(@PathVariable String cpf, @PathVariable String senha) {
         try {
